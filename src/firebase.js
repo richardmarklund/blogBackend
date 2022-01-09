@@ -3,7 +3,7 @@ import moment from "moment"
 import { readFile } from 'fs/promises';
 
 
-const serviceAccount = JSON.parse(await readFile(new URL('./serviceAccountKey.json', import.meta.url)));
+const serviceAccount = JSON.parse(await readFile(new URL('../serviceAccountKey.json', import.meta.url)));
 
 
 
