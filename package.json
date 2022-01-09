@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "express": "^4.17.2",
+    "firebase": "^9.6.2",
+    "firebase-admin": "^10.0.1",
+    "fs": "^0.0.1-security",
+    "moment": "^2.29.1",
     "node": "^17.3.0"
   },
   "type": "module"
