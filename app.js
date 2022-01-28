@@ -37,6 +37,4 @@ app.post("/post", (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log("test");
-});
+app.listen(port);
