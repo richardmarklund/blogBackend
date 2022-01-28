@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllPosts, addPost } from "./src/dynamodb.js";
+import { getAllPosts, addPost } from "./src/database.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,11 +15,6 @@ app.get("/allPosts", (req, res) => {
       res.status(500);
       res.render("error", { error: e });
     });
-});
-
-app.get("", (req, res) => {
-      res.setHeader("Content-Type", "application/json");
-      res.send("helloWorld");
 });
 
 app.post("/post", (req, res) => {
