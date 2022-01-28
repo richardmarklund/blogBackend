@@ -20,4 +20,14 @@ async function addPost(post) {
   return res;
 }
 
-export { getAllPosts, addPost };
+async function deletePost(post) {
+  const client = new Client({ connectionString: process.env.DATABASEURL });
+  await client.connect();
+  const res = await client.query(
+    `DELETE from public."blogPost" where id = ${post.id}`
+  );
+  await client.end();
+  return res;
+}
+
+export { getAllPosts, addPost, deletePost };
