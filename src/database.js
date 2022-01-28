@@ -1,20 +1,22 @@
-import Client from 'pg/lib/client.js'
+import Client from "pg/lib/client.js";
+import dotenv from "dotenv";
 
-const client =  new Client({connectionString: process.env.DATABASE_URL})
+dotenv.config();
+const client = new Client({ connectionString: process.env.DATABASE_URL });
 
-
-
- async function getAllPosts() {
-  await client.connect()
-  const res = await client.query('SELECT * FROM public."blogPost"')
-   await client.end()
-   return res.rows;
-  
+async function getAllPosts() {
+  await client.connect();
+  const res = await client.query('SELECT * FROM public."blogPost"');
+  await client.end();
+  return res.rows;
 }
 async function addPost(post) {
-  await client.connect()
-  const res = await client.query(`INSERT INTO public."blogPost" (date,topic,body) VALUES ('${post.date}','${post.topic}','${post.body}')`)
-   await client.end()
-   return res;
+  await client.connect();
+  const res = await client.query(
+    `INSERT INTO public."blogPost" (date,topic,body) VALUES ('${post.date}','${post.topic}','${post.body}')`
+  );
+  await client.end();
+  return res;
 }
+
 export { getAllPosts, addPost };
