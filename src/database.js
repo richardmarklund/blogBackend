@@ -1,5 +1,6 @@
-const { Client } = require('pg')
-const client = new Client({connectionString: process.env.DATABASE_URL})
+import Client from 'pg/lib/client.js'
+
+const client =  new Client({connectionString: process.env.DATABASE_URL})
 
 
 
