@@ -3,14 +3,11 @@ import { getAllPosts, addPost, deletePost } from "./src/database.js";
 import cors from "cors";
 
 const app = express();
-var corsOptions = {
-  origin: process.env.ORIGIN,
-  optionsSuccessStatus: 200,
-};
+app.use(cors());
 
 const port = process.env.PORT || 3000;
 
-app.get("/allPosts", cors(corsOptions), (req, res) => {
+app.get("/allPosts", (req, res) => {
   try {
     getAllPosts()
       .then((posts) => {
@@ -27,7 +24,7 @@ app.get("/allPosts", cors(corsOptions), (req, res) => {
   }
 });
 
-app.post("/post", cors(corsOptions), (req, res) => {
+app.post("/post",  (req, res) => {
   const body = req.body;
   try {
     addPost(body)
@@ -43,7 +40,7 @@ app.post("/post", cors(corsOptions), (req, res) => {
   }
 });
 
-app.delete("/delete", cors(corsOptions), (req, res) => {
+app.delete("/delete", (req, res) => {
   const body = req.body;
   try {
     deletePost(body)
