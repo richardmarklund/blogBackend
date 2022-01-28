@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllPosts, addPost, deletePost } from "./src/database.js";
+import { getTop10Posts, addPost, deletePost } from "./src/database.js";
 import cors from "cors";
 import bp from "body-parser";
 
@@ -10,9 +10,9 @@ app.use(bp.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000;
 
-app.get("/allPosts", (req, res) => {
+app.get("/getFirst10Posts", (req, res) => {
   try {
-    getAllPosts()
+    getTop10Posts()
       .then((posts) => {
         res
           .setHeader("Content-Type", "application/json")

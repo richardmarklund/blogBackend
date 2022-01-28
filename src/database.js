@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-async function getAllPosts() {
+async function getTop10Posts() {
   const client = new Client({ connectionString: process.env.DATABASEURL });
   await client.connect();
-  const res = await client.query('SELECT * FROM public."blogPost"');
+  const res = await client.query('SELECT * FROM public."blogPost" ORDER BY id DESC LIMIT 10');
   await client.end();
   return res.rows;
 }
@@ -30,4 +30,4 @@ async function deletePost(post) {
   return res;
 }
 
-export { getAllPosts, addPost, deletePost };
+export { getTop10Posts, addPost, deletePost };
