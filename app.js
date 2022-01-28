@@ -1,5 +1,5 @@
 import express from "express";
-import { getTop10Posts, addPost, deletePost } from "./src/database.js";
+import { get10PostsAfter, getTop10Posts, addPost, deletePost } from "./src/database.js";
 import cors from "cors";
 import bp from "body-parser";
 
@@ -10,9 +10,9 @@ app.use(bp.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000;
 
-app.get("/getFirst10Posts", (req, res) => {
+app.get("/getFirstPosts", (req, res) => {
   try {
-    getTop10Posts()
+    getFirstPosts()
       .then((posts) => {
         res
           .setHeader("Content-Type", "application/json")
@@ -26,6 +26,24 @@ app.get("/getFirst10Posts", (req, res) => {
     console.log(err);
   }
 });
+
+app.get("/getTenPostsAfter", (req, res)=>{
+  try {
+    const max = req.query.max;
+    getNextTenPosts(max)
+    .then((posts) => {
+      res
+        .setHeader("Content-Type", "application/json")
+        .send(JSON.stringify(posts));
+    })
+    .catch((e) => {
+      console.log(e);
+      res.status(500).send(e);
+    });
+  } catch (err) {
+    console.log(err);
+}
+})
 
 app.post("/post", (req, res) => {
   const body = req.body;
