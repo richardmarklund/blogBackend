@@ -17,7 +17,7 @@ app.get("/allPosts", (req, res) => {
     });
 });
 
-app.get("/", (req, res) => {
+app.get("", (req, res) => {
       res.setHeader("Content-Type", "application/json");
       res.send("helloWorld");
 });
