@@ -1,9 +1,12 @@
 import express from "express";
 import { getAllPosts, addPost, deletePost } from "./src/database.js";
 import cors from "cors";
+import bp from "body-parser";
 
 const app = express();
 app.use(cors());
+app.use(bp.json());
+app.use(bp.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000;
 
@@ -24,7 +27,7 @@ app.get("/allPosts", (req, res) => {
   }
 });
 
-app.post("/post",  (req, res) => {
+app.post("/post", (req, res) => {
   const body = req.body;
   try {
     addPost(body)
