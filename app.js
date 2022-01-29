@@ -1,5 +1,5 @@
 import express from "express";
-import { get10PostsAfter, getTop10Posts, addPost, deletePost } from "./src/database.js";
+import { getNextTenPosts, getFirstPosts, addPost, deletePost } from "./src/database.js";
 import cors from "cors";
 import bp from "body-parser";
 
