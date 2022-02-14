@@ -26,13 +26,13 @@ async function addPost(post) {
   const client = new Client({ connectionString: process.env.DATABASEURL });
   await client.connect();
   const res = await client.query(
-    `INSERT INTO public."blogPost" (date,topic,body) VALUES ($1,$2,$3)`,
+    `INSERT INTO public."blogPost" (date,topic,body) VALUES ($1,$2,$3) RETURNING id`,
     [post.date,
     post.topic,
     post.body]
   );
   await client.end();
-  return res;
+  return res.rows[0].id;
 }
 
 async function deletePost(post) {

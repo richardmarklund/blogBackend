@@ -1,5 +1,10 @@
 import express from "express";
-import { getNextTenPosts, getFirstPosts, addPost, deletePost } from "./src/database.js";
+import {
+  getNextTenPosts,
+  getFirstPosts,
+  addPost,
+  deletePost,
+} from "./src/database.js";
 import cors from "cors";
 import bp from "body-parser";
 
@@ -27,30 +32,30 @@ app.get("/getFirstPosts", (req, res) => {
   }
 });
 
-app.get("/getTenPostsAfter", (req, res)=>{
+app.get("/getTenPostsAfter", (req, res) => {
   try {
     const max = req.query.max;
     getNextTenPosts(max)
-    .then((posts) => {
-      res
-        .setHeader("Content-Type", "application/json")
-        .send(JSON.stringify(posts));
-    })
-    .catch((e) => {
-      console.log(e);
-      res.status(500).send(e);
-    });
+      .then((posts) => {
+        res
+          .setHeader("Content-Type", "application/json")
+          .send(JSON.stringify(posts));
+      })
+      .catch((e) => {
+        console.log(e);
+        res.status(500).send(e);
+      });
   } catch (err) {
     console.log(err);
-}
-})
+  }
+});
 
 app.post("/post", (req, res) => {
   const body = req.body;
   try {
     addPost(body)
-      .then(() => {
-        res.setHeader("Content-Type", "application/json").sendStatus(200);
+      .then((id) => {
+        res.setHeader("Content-Type", "application/json").send(id);
       })
       .catch((e) => {
         console.log(e);
@@ -63,18 +68,23 @@ app.post("/post", (req, res) => {
 
 app.delete("/delete", (req, res) => {
   const body = req.body;
-  try {
-    deletePost(body)
-      .then(() => {
-        res.setHeader("Content-Type", "application/json").sendStatus(200);
-      })
-      .catch((e) => {
-        console.log(e);
-        res.status(500).send(e);
-      });
-  } catch (err) {
-    console.log(err);
+  if (!body.id) {
+    res.status(500).send("post id not found");
+  } else {
+    try {
+      deletePost(body)
+        .then(() => {
+          res.setHeader("Content-Type", "application/json").sendStatus(200);
+        })
+        .catch((e) => {
+          console.log(e);
+          res.status(500).send(e);
+        });
+    } catch (err) {
+      console.log(err);
+    }
   }
 });
 
 app.listen(port);
+export default app;
