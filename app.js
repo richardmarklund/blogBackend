@@ -24,7 +24,6 @@ app.get("/getFirstPosts", (req, res) => {
           .send(JSON.stringify(posts));
       })
       .catch((e) => {
-        console.log(e);
         res.status(500).send(e);
       });
   } catch (err) {
@@ -42,7 +41,6 @@ app.get("/getTenPostsAfter", (req, res) => {
           .send(JSON.stringify(posts));
       })
       .catch((e) => {
-        console.log(e);
         res.status(500).send(e);
       });
   } catch (err) {
@@ -55,10 +53,9 @@ app.post("/post", (req, res) => {
   try {
     addPost(body)
       .then((id) => {
-        res.setHeader("Content-Type", "application/json").send(id);
+        res.setHeader("Content-Type", "application/json").send(JSON.stringify(id));
       })
       .catch((e) => {
-        console.log(e);
         res.status(500).send(e);
       });
   } catch (err) {
@@ -74,10 +71,9 @@ app.delete("/delete", (req, res) => {
     try {
       deletePost(body)
         .then(() => {
-          res.setHeader("Content-Type", "application/json").sendStatus(200);
+          res.sendStatus(200);
         })
         .catch((e) => {
-          console.log(e);
           res.status(500).send(e);
         });
     } catch (err) {
