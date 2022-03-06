@@ -14,7 +14,7 @@ app.use(cors());
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 app.get("/getFirstPosts", async (req, res) => {
   try {
