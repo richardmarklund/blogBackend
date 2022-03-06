@@ -10,3 +10,9 @@ services:
       - "3001:3000"
     environment:
       DEBUG: nodejs-docker-express:*
+    networks:
+      - blogNetwork
+      
+networks:
+  blogNetwork:
+    name: blog_network
