@@ -7,59 +7,52 @@ import {
 } from "./src/database.js";
 import cors from "cors";
 import bp from "body-parser";
+import _ from "lodash";
 
 const app = express();
 app.use(cors());
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
-app.get("/getFirstPosts", (req, res) => {
+app.get("/getFirstPosts", async (req, res) => {
   try {
-    getFirstPosts()
-      .then((posts) => {
-        res
-          .setHeader("Content-Type", "application/json")
-          .send(JSON.stringify(posts));
-      })
-      .catch((e) => {
-        res.status(500).send(e);
-      });
+    var posts = _.difference(await getFirstPosts(), ['meta'])
+    res
+    .setHeader("Content-Type", "application/json")
+    .send(JSON.stringify(posts));
   } catch (err) {
     console.log(err);
+    res.status(500).send(err);
   }
 });
 
-app.get("/getTenPostsAfter", (req, res) => {
+app.get("/getTenPostsAfter", async (req, res) => {
   try {
     const max = req.query.max;
-    getNextTenPosts(max)
-      .then((posts) => {
-        res
-          .setHeader("Content-Type", "application/json")
-          .send(JSON.stringify(posts));
-      })
-      .catch((e) => {
-        res.status(500).send(e);
-      });
+    var posts = _.difference(await getNextTenPosts(max), ['meta'])
+    res
+      .setHeader("Content-Type", "application/json")
+      .send(JSON.stringify(posts));
   } catch (err) {
-    console.log(err);
+    res.status(500).send(err);
   }
 });
 
-app.post("/post", (req, res) => {
+
+app.post("/post", async (req, res) => {
   const body = req.body;
-  try {
-    addPost(body)
-      .then((id) => {
-        res.setHeader("Content-Type", "application/json").send(JSON.stringify(id));
-      })
-      .catch((e) => {
-        res.status(500).send(e);
-      });
-  } catch (err) {
-    console.log(err);
+  if (!body.date || !body.topic) {
+    res.status(500).send("post id not found");
+  } else {
+    try {
+      var post = await addPost(body);
+      var id = _.difference(post, ['meta'])[0].id;
+      res.setHeader("Content-Type", "application/json").send(JSON.stringify(id));
+    } catch (err) {
+      console.log(err);
+    }
   }
 });
 
@@ -70,14 +63,9 @@ app.delete("/delete", (req, res) => {
   } else {
     try {
       deletePost(body)
-        .then(() => {
-          res.sendStatus(200);
-        })
-        .catch((e) => {
-          res.status(500).send(e);
-        });
+      res.sendStatus(200);
     } catch (err) {
-      console.log(err);
+      res.status(500).send(err);
     }
   }
 });

@@ -1,49 +1,75 @@
-import Client from "pg/lib/client.js";
+import mariadb from "mariadb";
 import dotenv from "dotenv";
 
 dotenv.config();
 
+const pool = mariadb.createPool({
+  host: process.env.DATABASE_URL,
+  user: process.env.DATABASE_USERNAME,
+  password: process.env.DATABASE_PASSWORD,
+  database: "blog",
+  connectionLimit: 5,
+});
+
 async function getFirstPosts() {
-  const client = new Client({ connectionString: process.env.DATABASEURL });
-  await client.connect();
-  const res = await client.query(
-    'SELECT * FROM public."blogPost" ORDER BY id DESC LIMIT 10', 
-  );
-  await client.end();
-  return res.rows;
+  let conn
+  try {
+    conn = await pool.getConnection();
+    return await conn.query(
+      'SELECT * FROM blog ORDER BY id DESC LIMIT 10'
+    )
+    
+     
+  } catch (err) {
+    throw err;
+  } finally {
+    if (conn) conn.end();
+  }
 }
 
 async function getNextTenPosts(max) {
-  const client = new Client({ connectionString: process.env.DATABASEURL });
-  await client.connect();
-  const res = await client.query(
-    'SELECT * FROM public."blogPost" WHERE id < $1 ORDER BY id DESC LIMIT 10',[max], 
-  );
-  await client.end();
-  return res.rows;
+  let conn
+  try {
+    conn = await pool.getConnection();
+     return await conn.query(
+      'SELECT * FROM blog WHERE id < ? ORDER BY id DESC LIMIT 10',
+      [max]
+    );
+  } catch (err) {
+    throw err;
+  } finally {
+    if (conn) conn.end();
+  }
 }
 async function addPost(post) {
-  const client = new Client({ connectionString: process.env.DATABASEURL });
-  await client.connect();
-  const res = await client.query(
-    `INSERT INTO public."blogPost" (date,topic,body) VALUES ($1,$2,$3) RETURNING id`,
-    [post.date,
-    post.topic,
-    post.body]
-  );
-  await client.end();
-  return res.rows[0].id;
+  let conn
+  try {
+    conn = await pool.getConnection();
+    return await conn.query(
+      `INSERT INTO blog (date,topic,body) VALUES (?,?,?) RETURNING id`,
+      [post.date, post.topic, post.body]
+    );
+  } catch (err) {
+    throw err;
+  } finally {
+    if (conn) conn.end();
+  }
 }
 
 async function deletePost(post) {
-  const client = new Client({ connectionString: process.env.DATABASEURL });
-  await client.connect();
-  const res = await client.query(
-    `DELETE from public."blogPost" where id = $1`,
-    [post.id]
-  );
-  await client.end();
-  return res;
+  let conn 
+  try {
+    conn = await pool.getConnection();
+    const res = await conn.query(
+      `DELETE from blog where id = ?`,
+      [post.id]
+    );
+    return res;
+  } catch (err) {
+    throw err;
+  } finally {
+    if (conn) conn.end();
+  }
 }
 
-export { getNextTenPosts,getFirstPosts, addPost, deletePost };
+export { getNextTenPosts, getFirstPosts, addPost, deletePost };
