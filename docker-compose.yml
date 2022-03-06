@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  web:
+    build:
+      context: ./
+    volumes:
+      - .:/src
+    command: node app.js
+    ports:
+      - "3001:3000"
+    environment:
+      DEBUG: nodejs-docker-express:*
