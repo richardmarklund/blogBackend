@@ -55,8 +55,8 @@ app.post("/post", async (req, res) => {
     }
   }
 });
-
-app.delete("/delete", (req, res) => {
+app.options('/delete', cors())
+app.delete("/delete", cors(), (req, res) => {
   const body = req.body;
   if (!body.id) {
     res.status(500).send("post id not found");
