@@ -10,13 +10,9 @@ import bp from "body-parser";
 import _ from "lodash";
 
 const app = express();
+app.use(cors());
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
-app.use(cors({
-  origin: "http://192.168.1.2:3000",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  preflightContinue: false
-}));
 
 const port = process.env.PORT || 3000;
 
