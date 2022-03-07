@@ -8,6 +8,21 @@ import {
 import cors from "cors";
 import bp from "body-parser";
 import _ from "lodash";
+import multer from 'multer';
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads/')
+  },
+  filename: function (req, file, cb) {
+    console.log(file)
+    const uniquePrefix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, uniquePrefix + '-' + file.originalname)
+  }
+})
+
+const upload = multer({ storage: storage });
 
 const app = express();
 
@@ -73,6 +88,18 @@ app.delete("/delete", (req, res) => {
     }
   }
 });
+
+app.post('/image', upload.single('image'), function (req, res, next) {
+  const file = req.file;
+
+  if (!file) {
+    const error = new Error('Please upload a file');
+    res.status(400).send(error);
+  }
+  const filename = req.file.filename;
+  res.setHeader("Content-Type", "application/json").send(JSON.stringify(filename));
+})
+
 
 app.listen(port);
 export default app;
