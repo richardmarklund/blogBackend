@@ -10,7 +10,6 @@ import bp from "body-parser";
 import _ from "lodash";
 
 const app = express();
-app.use(cors());
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
 app.options('*', cors());
