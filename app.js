@@ -12,7 +12,11 @@ import _ from "lodash";
 const app = express();
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
-app.options('*', cors());
+app.use(cors({
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  preflightContinue: false
+}));
 
 const port = process.env.PORT || 3000;
 
@@ -56,7 +60,7 @@ app.post("/post", async (req, res) => {
   }
 });
 
-app.delete("/delete", cors(), (req, res) => {
+app.delete("/delete", (req, res) => {
   const body = req.body;
   if (!body.id) {
     res.status(500).send("post id not found");
