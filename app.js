@@ -13,7 +13,7 @@ const app = express();
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
 app.use(cors({
-  origin: "*",
+  origin: "http://192.168.1.2:3000",
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   preflightContinue: false
 }));
