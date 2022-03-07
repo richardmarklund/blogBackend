@@ -13,6 +13,7 @@ const app = express();
 app.use(cors());
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
+app.options('*', cors());
 
 const port = process.env.PORT || 3000;
 
@@ -55,7 +56,7 @@ app.post("/post", async (req, res) => {
     }
   }
 });
-app.options('/delete', cors())
+
 app.delete("/delete", cors(), (req, res) => {
   const body = req.body;
   if (!body.id) {
