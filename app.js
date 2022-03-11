@@ -102,7 +102,7 @@ app.post("/image", upload.single("image"), function (req, res, next) {
 });
 
 app.get("/image/:imageId", (req, res) => {
-  res.sendFile(req.params.imageId,{root: `./uploads/`});
+  res.sendFile(req.params.imageId,{root: `/uploads/`});
 
 });
 
