@@ -25,7 +25,7 @@ const upload = multer({ storage: storage });
 const app = express();
 
 const options = {
-  origin: 'http://192.168.1.2:3000'
+  origin: ['http://192.168.1.2:3000', 'http://localhost:3000']
 };
 app.use(cors(options));
 app.use(bp.json());
