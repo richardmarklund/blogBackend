@@ -59,8 +59,8 @@ app.get("/getTenPostsAfter", async (req, res) => {
 
 app.post("/post", async (req, res) => {
   const body = req.body;
-  if (!body.date || !body.topic) {
-    res.status(500).send("post id not found");
+  if (!body.date) {
+    res.status(500).send("date not found");
   } else {
     try {
       var post = await addPost(body);
