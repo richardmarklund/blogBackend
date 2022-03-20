@@ -4,11 +4,13 @@ import {
   getFirstPosts,
   addPost,
   deletePost,
-} from "./src/database.js";
+} from "./database.js";
+import { authenticateToken } from "./authentication.js";
 import cors from "cors";
 import bp from "body-parser";
 import _ from "lodash";
 import multer from "multer";
+import { checkAuth } from "./authentication.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -25,13 +27,23 @@ const upload = multer({ storage: storage });
 const app = express();
 
 const options = {
-  origin: ['http://192.168.1.2:3000', 'http://localhost:3000']
+  origin: ["http://192.168.1.2:3000", "http://localhost:3000"],
 };
 app.use(cors(options));
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
+
+
+app.post("/authenticate", (req, res) => {
+  const token = checkAuth(req.body.username, req.body.password);
+  if (token.isLoggedIn) {
+    res.json(token.token);
+  }else{
+    res.sendStatus(403);
+  }
+});
 
 app.get("/getFirstPosts", async (req, res) => {
   try {
@@ -57,7 +69,7 @@ app.get("/getTenPostsAfter", async (req, res) => {
   }
 });
 
-app.post("/post", async (req, res) => {
+app.post("/post", authenticateToken, async (req, res) => {
   const body = req.body;
   if (!body.date) {
     res.status(500).send("date not found");
@@ -74,7 +86,7 @@ app.post("/post", async (req, res) => {
   }
 });
 
-app.delete("/delete", (req, res) => {
+app.delete("/delete", authenticateToken, (req, res) => {
   const body = req.body;
   if (!body.id) {
     res.status(500).send("post id not found");
@@ -88,22 +100,26 @@ app.delete("/delete", (req, res) => {
   }
 });
 
-app.post("/image", upload.single("image"), function (req, res, next) {
-  const file = req.file;
+app.post(
+  "/image",
+  authenticateToken,
+  upload.single("image"),
+  function (req, res) {
+    const file = req.file;
 
-  if (!file) {
-    const error = new Error("Please upload a file");
-    res.status(400).send(error);
+    if (!file) {
+      const error = new Error("Please upload a file");
+      res.status(400).send(error);
+    }
+    const filename = req.file.filename;
+    res
+      .setHeader("Content-Type", "application/json")
+      .send(JSON.stringify(filename));
   }
-  const filename = req.file.filename;
-  res
-    .setHeader("Content-Type", "application/json")
-    .send(JSON.stringify(filename));
-});
+);
 
-app.get("/image/:imageId", (req, res) => {
-  res.sendFile(req.params.imageId,{root: `/uploads/`});
-
+app.get("/image/:imageId", authenticateToken, (req, res) => {
+  res.sendFile(req.params.imageId, { root: `/uploads/` });
 });
 
 app.listen(port);

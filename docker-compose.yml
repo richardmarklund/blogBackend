@@ -6,7 +6,7 @@ services:
     volumes:
       - .:/src
       - /mnt/uploads:/uploads
-    command: node app.js
+    command: node src/app.js
     ports:
       - "3001:3000"
     environment:
@@ -14,6 +14,9 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      API_USERNAME: ${API_USERNAME}
+      API_PASSWORD: ${API_PASSWORD}
+      API_TOKEN_SECRET: ${API_TOKEN_SECRET}
     networks:
       - blogNetwork
       
