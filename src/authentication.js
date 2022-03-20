@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import moment from "moment"
 
 dotenv.config();
 
@@ -10,7 +9,6 @@ const savedPassword = process.env.API_PASSWORD;
 const tokenSecret = process.env.API_TOKEN_SECRET;
 
 export const checkAuth = (username, password) => {
-  console.log(savedUsername, savedPassword, username, password);
   if (username == savedUsername && password == savedPassword) {
     return {
       isLoggedIn: true,
@@ -38,5 +36,5 @@ export const authenticateToken = (req, res, next) => {
 };
 
 function generateAccessToken(username) {
-    return jwt.sign({ username }, JSON.stringify({ id: tokenSecret, time: moment.now }),);
+    return jwt.sign({ username }, tokenSecret);
 }
