@@ -39,7 +39,7 @@ const port = process.env.PORT || 3001;
 app.post("/authenticate", (req, res) => {
   const token = checkAuth(req.body.username, req.body.password);
   if (token.isLoggedIn) {
-    res.json(token.token);
+    res.send(JSON.stringify(token.token));
   }else{
     res.sendStatus(403);
   }
