@@ -1,16 +1,19 @@
 import express from "express";
 import {
-  getNextTenPosts,
-  getFirstPosts,
+  getNewestPosts,
+  getTenPosts,
   addPost,
-  deletePost,
+  deletePost
 } from "./database.js";
-import { authenticateToken } from "./authentication.js";
+import dotenv from "dotenv";
 import cors from "cors";
 import bp from "body-parser";
 import _ from "lodash";
 import multer from "multer";
 import { checkAuth } from "./authentication.js";
+
+const router = express.Router();
+dotenv.config();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -24,6 +27,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const getNextPage = (posts,path) => {
+  if (posts.length > 10) {
+    const maxId = posts.slice(0,10)[9].id
+      return `http://192.168.1.2:3001/getTenPosts?before=${maxId}`
+  } else {
+    return null
+    }
+}
+
 const app = express();
 
 const options = {
@@ -32,6 +44,7 @@ const options = {
 app.use(cors(options));
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
+app.use('/api/v1',router)
 
 const port = process.env.PORT || 3001;
 
@@ -45,31 +58,37 @@ app.post("/authenticate", (req, res) => {
   }
 });
 
-app.get("/getFirstPosts", async (req, res) => {
+app.get("/getPosts", async (req, res) => {
   try {
-    var posts = _.difference(await getFirstPosts(), ["meta"]);
+    var posts = _.difference(await getNewestPosts(), ["meta"]);
     res
       .setHeader("Content-Type", "application/json")
-      .send(JSON.stringify(posts));
+      .send(JSON.stringify({
+        next: getNextPage(posts), 
+        data: posts.slice(0,10)
+      }));
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
   }
 });
 
-app.get("/getTenPostsAfter", async (req, res) => {
+app.get("/getTenPosts", async (req, res) => {
   try {
-    const max = req.query.max;
-    var posts = _.difference(await getNextTenPosts(max), ["meta"]);
+    const before = req.query.before;
+    var posts = _.difference(await getTenPosts(before), ["meta"]);
     res
       .setHeader("Content-Type", "application/json")
-      .send(JSON.stringify(posts));
+      .send(JSON.stringify({
+        next: getNextPage(posts), 
+        data: posts.slice(0,10)
+      }));
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-app.post("/post", authenticateToken, async (req, res) => {
+app.post("/post", async (req, res) => {
   const body = req.body;
   if (!body.date) {
     res.status(500).send("date not found");
@@ -86,7 +105,7 @@ app.post("/post", authenticateToken, async (req, res) => {
   }
 });
 
-app.delete("/delete", authenticateToken, (req, res) => {
+app.delete("/delete", (req, res) => {
   const body = req.body;
   if (!body.id) {
     res.status(500).send("post id not found");
@@ -102,7 +121,6 @@ app.delete("/delete", authenticateToken, (req, res) => {
 
 app.post(
   "/image",
-  authenticateToken,
   upload.single("image"),
   function (req, res) {
     const file = req.file;
@@ -118,7 +136,7 @@ app.post(
   }
 );
 
-app.get("/image/:imageId", authenticateToken, (req, res) => {
+app.get("/image/:imageId", (req, res) => {
   res.sendFile(req.params.imageId, { root: `/uploads/` });
 });
 

@@ -11,15 +11,13 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
 });
 
-async function getFirstPosts() {
+async function getNewestPosts() {
   let conn
   try {
     conn = await pool.getConnection();
     return await conn.query(
-      'SELECT * FROM blog ORDER BY id DESC LIMIT 10'
+      'SELECT * FROM blog ORDER BY id DESC LIMIT 11'
     )
-    
-     
   } catch (err) {
     throw err;
   } finally {
@@ -27,13 +25,13 @@ async function getFirstPosts() {
   }
 }
 
-async function getNextTenPosts(max) {
+async function getTenPosts(before) {
   let conn
   try {
     conn = await pool.getConnection();
      return await conn.query(
-      'SELECT * FROM blog WHERE id < ? ORDER BY id DESC LIMIT 10',
-      [max]
+      'SELECT * FROM blog WHERE id < ? ORDER BY id DESC LIMIT 11',
+      [before]
     );
   } catch (err) {
     throw err;
@@ -72,4 +70,4 @@ async function deletePost(post) {
   }
 }
 
-export { getNextTenPosts, getFirstPosts, addPost, deletePost };
+export { getNewestPosts, getTenPosts, addPost, deletePost };

@@ -8,31 +8,12 @@ const savedUsername = process.env.API_USERNAME;
 const savedPassword = process.env.API_PASSWORD;
 const tokenSecret = process.env.API_TOKEN_SECRET;
 
-export const checkAuth = (username, password) => {
-  if (username == savedUsername && password == savedPassword) {
-    return {
-      isLoggedIn: true,
-      token: generateAccessToken(username),
-    };
-  } else {
-    return {
-      isLoggedIn: false,
-      token: null,
-    };
-  }
-};
-
-export const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  console.log(token)
-
-  jwt.verify(token, process.env.API_TOKEN_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-
-    req.user = user;
-    next();
-  });
+export const checkAuth = (req, res, next) => {
+    if (req.session && req.session.user == savedUsername && req.session.password == savedPassword) {
+        next();
+    } else {
+        return res.sendStatus(401);
+    }
 };
 
 function generateAccessToken(username) {
