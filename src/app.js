@@ -43,6 +43,7 @@ const app = express();
 
 const options = {
   origin: ["http://192.168.1.2:3000", "http://localhost:3000"],
+  credentials: true
 };
 
 app.use(cookieParser());
