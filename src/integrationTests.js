@@ -1,7 +1,7 @@
 import request from "supertest";
 import assert from "assert";
-import app from "./src/app.js";
-import { addPost, deletePost } from "./src/database.js";
+import app from "./app.js";
+import { addPost, deletePost } from "./database.js";
 import _ from "lodash";
 import dotenv from "dotenv";
 
@@ -60,6 +60,26 @@ describe("remove /remove", () => {
       assert(response.status === 500);
     });
   });
+});
+  
+  describe("put /post", () => {
+    before("add to be edited", async () => {
+      const id = await addPost({
+        date: "2019-01-01",
+        body: "testing123",
+      });
+      describe("edit post", () => {
+        it("returns 200", async () => {
+          const response = await request(app)
+            .put("/post")
+            .set("Cookie", [`token=${token}`])
+            .send({ id: id[0].id, body: "edited" });
+          assert(response.status === 200);
+
+          deletePost({id: id})
+        });
+      });
+    });
 
   describe("remove without body", () => {
     it("returns 500", async () => {

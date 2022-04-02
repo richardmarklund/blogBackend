@@ -4,6 +4,7 @@ import {
   getTenPosts,
   addPost,
   deletePost,
+  updatePost
 } from "./database.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -99,6 +100,19 @@ app.post("/post",verifyToken, async (req, res) => {
   }
 });
 
+app.put("/post",verifyToken, async (req, res) => {
+  const body = req.body;
+    try {
+      var post = await updatePost(body);
+      res
+        .setHeader("Content-Type", "application/json")
+        .send();
+    } catch (err) {
+      console.log(err);
+    }
+
+});
+
 app.delete("/delete",verifyToken, (req, res) => {
   const body = req.body;
   if (!body.id) {
@@ -145,7 +159,7 @@ app.post("/login", async (req, res) => {
       { user_id: 1, username: username },
       process.env.API_TOKEN_SECRET,
       {
-        expiresIn: "2h",
+        expiresIn: "24h",
       }
     );
     res.status(200).json(token);

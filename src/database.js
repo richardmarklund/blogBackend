@@ -54,6 +54,22 @@ async function addPost(post) {
   }
 }
 
+
+async function updatePost(post) {
+  let conn
+  try {
+    conn = await pool.getConnection();
+    return await conn.query(
+      `UPDATE blog SET body = ? WHERE id = ?`,
+      [ post.body, post.id]
+    );
+  } catch (err) {
+    throw err;
+  } finally {
+    if (conn) conn.end();
+  }
+}
+
 async function deletePost(post) {
   let conn 
   try {
@@ -70,4 +86,4 @@ async function deletePost(post) {
   }
 }
 
-export { getNewestPosts, getTenPosts, addPost, deletePost };
+export { getNewestPosts, getTenPosts, addPost, deletePost, updatePost };
