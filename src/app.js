@@ -140,7 +140,6 @@ app.post("/login", async (req, res) => {
   const savedUsername = process.env.API_USERNAME;
   const savedPassword = process.env.API_PASSWORD;
 
-
   if (savedUsername&&savedPassword && (await bcrypt.compare(password,savedPassword) && username === savedUsername)) {
     const token = jwt.sign(
       { user_id: 1, username: username },
