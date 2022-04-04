@@ -16,7 +16,6 @@ import jwt from "jsonwebtoken"
 import { verifyToken } from './auth.js'
 import cookieParser from 'cookie-parser';
 
-
 dotenv.config();
 
 const storage = multer.diskStorage({
@@ -34,7 +33,7 @@ const upload = multer({ storage: storage });
 const getNextPage = (posts, path) => {
   if (posts.length > 10) {
     const maxId = posts.slice(0, 10)[9].id;
-    return `http://192.168.1.2:3001/getTenPosts?before=${maxId}`;
+    return `http://backend.marklund.io/getTenPosts?before=${maxId}`;
   } else {
     return null;
   }
@@ -43,7 +42,7 @@ const getNextPage = (posts, path) => {
 const app = express();
 
 const options = {
-  origin: ["http://192.168.1.2:3000", "http://localhost:3000"],
+  origin: ["http://marklund.io", "http://localhost:3000"],
   credentials: true
 };
 
@@ -103,7 +102,7 @@ app.post("/post",verifyToken, async (req, res) => {
 app.put("/post",verifyToken, async (req, res) => {
   const body = req.body;
     try {
-      var post = await updatePost(body);
+      await updatePost(body);
       res
         .setHeader("Content-Type", "application/json")
         .send();
