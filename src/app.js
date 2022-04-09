@@ -4,7 +4,8 @@ import {
   getTenPosts,
   addPost,
   deletePost,
-  updatePost
+  updatePost,
+  publishPost
 } from "./database.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -12,9 +13,9 @@ import bp from "body-parser";
 import _ from "lodash";
 import multer from "multer";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
-import { verifyToken } from './auth.js'
-import cookieParser from 'cookie-parser';
+import jwt from "jsonwebtoken";
+import { verifyToken } from "./auth.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -43,7 +44,7 @@ const app = express();
 
 const options = {
   origin: ["http://marklund.io", "http://localhost:3000"],
-  credentials: true
+  credentials: true,
 };
 
 app.use(cookieParser());
@@ -82,7 +83,7 @@ app.get("/getTenPosts", async (req, res) => {
   }
 });
 
-app.post("/post",verifyToken, async (req, res) => {
+app.post("/post", verifyToken, async (req, res) => {
   const body = req.body;
   if (!body.date) {
     res.status(500).send("date not found");
@@ -91,6 +92,7 @@ app.post("/post",verifyToken, async (req, res) => {
       var post = await addPost(body);
       var id = _.difference(post, ["meta"])[0].id;
       res
+        .status(200)
         .setHeader("Content-Type", "application/json")
         .send(JSON.stringify(id));
     } catch (err) {
@@ -99,20 +101,27 @@ app.post("/post",verifyToken, async (req, res) => {
   }
 });
 
-app.put("/post",verifyToken, async (req, res) => {
+app.put("/publishPost", verifyToken, async (req, res) => {
   const body = req.body;
-    try {
-      await updatePost(body);
-      res
-        .setHeader("Content-Type", "application/json")
-        .send();
-    } catch (err) {
-      console.log(err);
-    }
-
+  try {
+    await publishPost(body);
+  } catch (err) {
+    console.log(err);
+  }
+  res.status(200).setHeader("Content-Type", "application/json").send();
 });
 
-app.delete("/delete",verifyToken, (req, res) => {
+app.put("/post", verifyToken, async (req, res) => {
+  const body = req.body;
+  try {
+    await updatePost(body);
+  } catch (err) {
+    console.log(err);
+  }
+  res.status(200).setHeader("Content-Type", "application/json").send();
+});
+
+app.delete("/delete", verifyToken, (req, res) => {
   const body = req.body;
   if (!body.id) {
     res.status(500).send("post id not found");
@@ -126,7 +135,7 @@ app.delete("/delete",verifyToken, (req, res) => {
   }
 });
 
-app.post("/image",verifyToken, upload.single("image"), (req, res) => {
+app.post("/image", verifyToken, upload.single("image"), (req, res) => {
   const file = req.file;
 
   if (!file) {
@@ -149,11 +158,16 @@ app.post("/login", async (req, res) => {
   if (!(username && password)) {
     res.status(400).send("All input is required");
   }
-  
+
   const savedUsername = process.env.API_USERNAME;
   const savedPassword = process.env.API_PASSWORD;
 
-  if (savedUsername&&savedPassword && (await bcrypt.compare(password,savedPassword) && username === savedUsername)) {
+  if (
+    savedUsername &&
+    savedPassword &&
+    (await bcrypt.compare(password, savedPassword)) &&
+    username === savedUsername
+  ) {
     const token = jwt.sign(
       { user_id: 1, username: username },
       process.env.API_TOKEN_SECRET,
@@ -165,7 +179,7 @@ app.post("/login", async (req, res) => {
   } else {
     res.status(400).send("Invalid Credentials");
   }
-})
+});
 
 app.listen(port);
 export default app;

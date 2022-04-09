@@ -40,6 +40,8 @@ describe("remove /remove", () => {
     const id = await addPost({
       date: "2019-01-01",
       body: "testing",
+      isDeleted: false,
+      isPublished: false,
     });
     describe("remove post", () => {
       it("returns 200", async () => {
@@ -61,34 +63,43 @@ describe("remove /remove", () => {
     });
   });
 });
-  
-  describe("put /post", () => {
-    before("add to be edited", async () => {
-      const id = await addPost({
-        date: "2019-01-01",
-        body: "testing123",
-      });
-      describe("edit post", () => {
-        it("returns 200", async () => {
-          const response = await request(app)
-            .put("/post")
-            .set("Cookie", [`token=${token}`])
-            .send({ id: id[0].id, body: "edited" });
-          assert(response.status === 200);
 
-          deletePost({id: id})
-        });
-      });
-    });
+describe("put /post", async () => {
+  let id = await addPost({
+    date: "2019-01-01",
+    body: "testing123",
+    isDeleted: false,
+    isPublished: false,
+  }).then(res => {return res[0]});
 
-  describe("remove without body", () => {
-    it("returns 500", async () => {
+  describe("edit post", () => {
+    it("returns 200", async () => {
       const response = await request(app)
-        .delete("/delete")
-        .set("Cookie", [`token=${token}`]);
-      assert(response.status === 500);
+        .put("/post")
+        .set("Cookie", [`token=${token}`])
+        .send({ id: id.id, body: "edited" });
+      assert(response.status === 200);
+    });
+    describe("publish post",  () => {
+      it("returns 200", async () => {
+      const response =  await request(app)
+        .put("/publishPost")
+        .set("Cookie", [`token=${token}`])
+        .send({ id: id.id });
+        assert(response.status === 200);
+      })
+    });
+    describe("remove without body",  () => {
+      it("returns 500", async () => {
+        const response = await request(app)
+          .delete("/delete")
+          .set("Cookie", [`token=${token}`]);
+        assert(response.status === 500);
+      });
     });
   });
+
+  deletePost({ id: id });
 });
 
 describe("post /post", () => {
@@ -100,9 +111,11 @@ describe("post /post", () => {
         .send({
           date: "2019-01-01",
           body: "testing",
+          isDeleted: false,
+          isPublished: false,
         });
       assert(response.status === 200);
-      let response2 = await deletePost({ id: response.text });
+       deletePost({ id: response.text });
     });
   });
 
