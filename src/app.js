@@ -6,7 +6,7 @@ import {
   deletePost,
   updatePost,
   publishPost,
-  getUnublishedPosts
+  getUnpublishedPosts
 } from "./database.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -86,7 +86,7 @@ app.get("/getTenPosts", async (req, res) => {
 
 app.get("/getUnpublishedPosts", async (req, res) => {
   try {
-    var posts = _.difference(await getUnublishedPosts(), ["meta"]);
+    var posts = _.difference(await getUnpublishedPosts(), ["meta"]);
     res.setHeader("Content-Type", "application/json").send(
       JSON.stringify({
         data: posts.slice(0, 10),
