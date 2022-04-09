@@ -19,7 +19,7 @@ services:
       API_TOKEN_SECRET: ${API_TOKEN_SECRET}
     networks:
       blog:
-       ipv4_address: 10.6.0.3
+       ipv4_address: 10.6.0.4
 
 networks:
   blog:
