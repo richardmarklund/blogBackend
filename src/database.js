@@ -16,7 +16,7 @@ async function getNewestPosts() {
   try {
     conn = await pool.getConnection();
     return await conn.query(
-      'SELECT * FROM blog where isDeleted = false ORDER BY id DESC LIMIT 11'
+      'SELECT * FROM blog where isDeleted = false and isPublished = true ORDER BY id DESC LIMIT 11'
     )
   } catch (err) {
     throw err;
@@ -30,7 +30,7 @@ async function getTenPosts(before) {
   try {
     conn = await pool.getConnection();
      return await conn.query(
-      'SELECT * FROM blog WHERE id < ? and isDeleted = false ORDER BY id DESC LIMIT 11',
+      'SELECT * FROM blog WHERE id < ? and isDeleted = false and isPublished = true ORDER BY id DESC LIMIT 11',
       [before]
     );
   } catch (err) {
@@ -39,6 +39,20 @@ async function getTenPosts(before) {
     if (conn) conn.end();
   }
 }
+
+async function getUnpublishedPosts() {
+  let conn
+  try {
+    conn = await pool.getConnection();
+     return await conn.query(
+      'SELECT * FROM blog WHERE isDeleted = false and isPublished = false ORDER BY id DESC');
+  } catch (err) {
+    throw err;
+  } finally {
+    if (conn) conn.end();
+  }
+} 
+
 async function addPost(post) {
   let conn
   try {
@@ -101,4 +115,4 @@ async function deletePost(post) {
   }
 }
 
-export { getNewestPosts, getTenPosts, addPost, deletePost, updatePost,publishPost };
+export { getNewestPosts, getTenPosts, addPost, deletePost, updatePost, publishPost, getUnpublishedPosts };

@@ -5,7 +5,8 @@ import {
   addPost,
   deletePost,
   updatePost,
-  publishPost
+  publishPost,
+  getUnublishedPosts
 } from "./database.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -75,6 +76,19 @@ app.get("/getTenPosts", async (req, res) => {
     res.setHeader("Content-Type", "application/json").send(
       JSON.stringify({
         next: getNextPage(posts),
+        data: posts.slice(0, 10),
+      })
+    );
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
+app.get("/getUnpublishedPosts", async (req, res) => {
+  try {
+    var posts = _.difference(await getUnublishedPosts(), ["meta"]);
+    res.setHeader("Content-Type", "application/json").send(
+      JSON.stringify({
         data: posts.slice(0, 10),
       })
     );
