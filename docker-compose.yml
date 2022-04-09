@@ -18,8 +18,14 @@ services:
       API_PASSWORD: ${API_PASSWORD}
       API_TOKEN_SECRET: ${API_TOKEN_SECRET}
     networks:
-      - blogNetwork
-      
+      blog:
+       ipv4_address: 10.6.0.3
+
 networks:
-  blogNetwork:
-    name: blog_network
+  blog:
+   name: blog
+   ipam:
+    driver: default
+    config:
+       - subnet: 10.6.0.0/16
+         gateway: 10.6.0.1
