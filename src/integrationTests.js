@@ -19,22 +19,38 @@ describe("post /login", function () {
   });
 });
 
-describe("get /getPosts", function () {
+describe("get /getAllPosts", function () {
   it("returns 200", async () => {
     const response = await request(app).get("/getPosts");
     assert(response.status === 200);
   });
 });
 
+describe("get /getPublishedPosts", function () {
+  it("returns 200", async () => {
+    const response = await request(app).get("/getPublishedPosts");
+    assert(response.status === 200);
+  });
+});
+
 describe("get /getTenPosts", function () {
   it("returns 200", async () => {
-    const max = 20;
     const response = await request(app)
       .get("/getTenPosts")
       .query({ before: 20 });
     assert(response.status === 200);
   });
 });
+
+describe("get /getTenPublishedPosts", function () {
+  it("returns 200", async () => {
+    const response = await request(app)
+      .get("/getTenPublishedPosts")
+      .query({ before: 20 });
+    assert(response.status === 200);
+  });
+});
+
 describe("remove /remove", () => {
   before("add to be deleted", async () => {
     const id = await addPost({

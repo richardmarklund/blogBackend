@@ -6,7 +6,8 @@ import {
   deletePost,
   updatePost,
   publishPost,
-  getUnpublishedPosts
+  getTenPublishedPosts,
+  getNewestPublishedPosts,
 } from "./database.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -35,7 +36,7 @@ const upload = multer({ storage: storage });
 const getNextPage = (posts, path) => {
   if (posts.length > 10) {
     const maxId = posts.slice(0, 10)[9].id;
-    return `http://backend.marklund.io/getTenPosts?before=${maxId}`;
+    return `${path}?before=${maxId}`;
   } else {
     return null;
   }
@@ -61,12 +62,12 @@ app.get("/getPosts", async (req, res) => {
     console.log(err);
     res.status(500).send(err);
   }
-      res.setHeader("Content-Type", "application/json").send(
-      JSON.stringify({
-        next: getNextPage(posts),
-        data: posts.slice(0, 10),
-      })
-    );
+  res.setHeader("Content-Type", "application/json").send(
+    JSON.stringify({
+      next: getNextPage(posts, "http://backend.marklund.io/getTenPosts"),
+      data: posts.slice(0, 10),
+    })
+  );
 });
 
 app.get("/getTenPosts", async (req, res) => {
@@ -78,7 +79,40 @@ app.get("/getTenPosts", async (req, res) => {
   }
   res.setHeader("Content-Type", "application/json").send(
     JSON.stringify({
-      next: getNextPage(posts),
+      next: getNextPage(posts, "http://backend.marklund.io/getTenPosts"),
+      data: posts.slice(0, 10),
+    })
+  );
+});
+
+app.get("/getPublishedPosts", async (req, res) => {
+  try {
+    var posts = _.difference(await getNewestPublishedPosts(), ["meta"]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+  res.setHeader("Content-Type", "application/json").send(
+    JSON.stringify({
+      next: getNextPage(
+        posts,
+        "http://backend.marklund.io/getTenPublishedPosts"
+      ),
+      data: posts.slice(0, 10),
+    })
+  );
+});
+
+app.get("/getTenPublishedPosts", async (req, res) => {
+  try {
+    const before = req.query.before;
+    var posts = _.difference(await getTenPublishedPosts(before), ["meta"]);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+  res.setHeader("Content-Type", "application/json").send(
+    JSON.stringify({
+      next: getNextPage(posts, "getTenPublishedPosts"),
       data: posts.slice(0, 10),
     })
   );
