@@ -16,7 +16,7 @@ async function getNewestPosts() {
   try {
     conn = await pool.getConnection();
     return await conn.query(
-      'SELECT * FROM blog where isDeleted = 0 ORDER BY id DESC LIMIT 11'
+      'SELECT * FROM blog where ORDER BY id DESC LIMIT 11'
     )
   } catch (err) {
     throw err;
@@ -30,7 +30,7 @@ async function getTenPosts(before) {
   try {
     conn = await pool.getConnection();
      return await conn.query(
-      'SELECT * FROM blog WHERE id < ? and isDeleted = 0 ORDER BY id DESC LIMIT 11',
+      'SELECT * FROM blog WHERE id < ? and ORDER BY id DESC LIMIT 11',
       [before]
     );
   } catch (err) {
