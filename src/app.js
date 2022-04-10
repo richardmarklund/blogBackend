@@ -57,44 +57,44 @@ const port = process.env.PORT || 3001;
 app.get("/getPosts", async (req, res) => {
   try {
     var posts = _.difference(await getNewestPosts(), ["meta"]);
-    res.setHeader("Content-Type", "application/json").send(
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+      res.setHeader("Content-Type", "application/json").send(
       JSON.stringify({
         next: getNextPage(posts),
         data: posts.slice(0, 10),
       })
     );
-  } catch (err) {
-    console.log(err);
-    res.status(500).send(err);
-  }
 });
 
 app.get("/getTenPosts", async (req, res) => {
   try {
     const before = req.query.before;
     var posts = _.difference(await getTenPosts(before), ["meta"]);
-    res.setHeader("Content-Type", "application/json").send(
-      JSON.stringify({
-        next: getNextPage(posts),
-        data: posts.slice(0, 10),
-      })
-    );
   } catch (err) {
     res.status(500).send(err);
   }
+  res.setHeader("Content-Type", "application/json").send(
+    JSON.stringify({
+      next: getNextPage(posts),
+      data: posts.slice(0, 10),
+    })
+  );
 });
 
 app.get("/getUnpublishedPosts", async (req, res) => {
   try {
     var posts = _.difference(await getUnpublishedPosts(), ["meta"]);
-    res.setHeader("Content-Type", "application/json").send(
-      JSON.stringify({
-        data: posts.slice(0, 10),
-      })
-    );
   } catch (err) {
     res.status(500).send(err);
   }
+  res.setHeader("Content-Type", "application/json").send(
+    JSON.stringify({
+      data: posts.slice(0, 10),
+    })
+  );
 });
 
 app.post("/post", verifyToken, async (req, res) => {
@@ -104,14 +104,14 @@ app.post("/post", verifyToken, async (req, res) => {
   } else {
     try {
       var post = await addPost(body);
-      var id = _.difference(post, ["meta"])[0].id;
-      res
-        .status(200)
-        .setHeader("Content-Type", "application/json")
-        .send(JSON.stringify(id));
     } catch (err) {
       console.log(err);
     }
+    var id = _.difference(post, ["meta"])[0].id;
+    res
+      .status(200)
+      .setHeader("Content-Type", "application/json")
+      .send(JSON.stringify(id));
   }
 });
 
@@ -142,10 +142,10 @@ app.delete("/delete", verifyToken, (req, res) => {
   } else {
     try {
       deletePost(body);
-      res.sendStatus(200);
     } catch (err) {
       res.status(500).send(err);
     }
+    res.sendStatus(200);
   }
 });
 
