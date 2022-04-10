@@ -16,7 +16,7 @@ async function getNewestPosts() {
   try {
     conn = await pool.getConnection();
     return await conn.query(
-      'SELECT * FROM blog where ORDER BY id DESC LIMIT 11'
+      'SELECT * FROM blog ORDER BY id DESC LIMIT 11'
     )
   } catch (err) {
     throw err;
