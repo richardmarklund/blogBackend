@@ -58,7 +58,7 @@ async function addPost(post) {
   try {
     conn = await pool.getConnection();
     return await conn.query(
-      `INSERT INTO blog (date,body) VALUES (?,?) RETURNING id`,
+      `INSERT INTO blog (date,body, isDeleted, isPublished) VALUES (?,?,0,0) RETURNING id`,
       [post.date, post.body]
     );
   } catch (err) {
