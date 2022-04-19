@@ -45,7 +45,7 @@ const getNextPage = (posts, path) => {
 const app = express();
 
 const options = {
-  origin: ["http://marklund.io", "http://localhost:3000", "http://192.168.1.2:3000"],
+  origin: ["https://marklund.io", "http://localhost:3000", "http://192.168.1.2:3000"],
   credentials: true,
 };
 
